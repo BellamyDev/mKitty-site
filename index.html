@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>mKitty — A Cozy Way to Study for the MCAT</title>
+<meta name="description" content="A free, open-source study RPG for MCAT students. Grow trees, decorate your farm, and actually look forward to studying." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700;9..144,900&family=Caveat:wght@500;700&family=Sniglet:wght@400;800&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================
+   DESIGN TOKENS — cozy storybook palette
+   ============================================================ */
+:root {
+  /* Wood & paper */
+  --paper: #f4e8cf;
+  --paper-light: #faf2dc;
+  --paper-shadow: #e2cfa3;
+  --wood-light: #c89968;
+  --wood: #8b6f47;
+  --wood-dark: #5d4828;
+  --ink: #3a2c1a;
+
+  /* Forest */
+  --leaf-light: #a8c97a;
+  --leaf: #6b8e3d;
+  --leaf-dark: #3f5825;
+  --moss: #4a6b3a;
+
+  /* Accents */
+  --bell: #d4a548;
+  --bell-glow: #f7d574;
+  --berry: #c44a3a;
+  --sky: #b8d4e0;
+  --pink: #e8a5b0;
+
+  /* Type */
+  --display: 'Fraunces', Georgia, serif;
+  --hand: 'Caveat', cursive;
+  --body: 'Sniglet', system-ui, sans-serif;
+
+  /* Layout */
+  --radius-sm: 12px;
+  --radius: 20px;
+  --radius-lg: 32px;
+  --shadow-sm: 0 2px 0 rgba(93, 72, 40, 0.15), 0 4px 12px rgba(93, 72, 40, 0.08);
+  --shadow: 0 4px 0 rgba(93, 72, 40, 0.2), 0 8px 24px rgba(93, 72, 40, 0.12);
+  --shadow-lg: 0 6px 0 rgba(93, 72, 40, 0.25), 0 16px 48px rgba(93, 72, 40, 0.18);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--body);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  overflow-x: hidden;
+  /* paper texture via subtle radial gradients */
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(200, 153, 104, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(168, 201, 122, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(212, 165, 72, 0.04) 0%, transparent 60%);
+}
+
+/* paper grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.36 0 0 0 0 0.28 0 0 0 0 0.16 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+a { color: inherit; text-decoration: none; }
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: var(--paper-light);
+  border: 3px solid var(--wood);
+  border-radius: 100px;
+  padding: 10px 28px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-logo {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--wood-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-logo-mark {
+  flex-shrink: 0;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  font-family: var(--body);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.nav-links a {
+  color: var(--wood-dark);
+  transition: color 0.2s;
+  position: relative;
+}
+
+.nav-links a:hover { color: var(--leaf-dark); }
+
+.nav-cta {
+  background: var(--leaf);
+  color: var(--paper-light);
+  padding: 8px 18px;
+  border-radius: 100px;
+  font-weight: 800;
+  font-size: 14px;
+  border: 2px solid var(--leaf-dark);
+  box-shadow: 0 2px 0 var(--leaf-dark);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nav-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 var(--leaf-dark);
+}
+
+.nav-cta:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 var(--leaf-dark);
+}
+
+@media (max-width: 700px) {
+  .nav { padding: 8px 16px; gap: 14px; top: 12px; }
+  .nav-logo { font-size: 18px; }
+  .nav-links { display: none; }
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 140px 24px 80px;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* hero background scene */
+.hero-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+}
+
+.hero-tagline {
+  font-family: var(--hand);
+  font-size: clamp(24px, 3vw, 32px);
+  color: var(--moss);
+  margin-bottom: 8px;
+  transform: rotate(-2deg);
+  display: inline-block;
+  animation: tilt-in 0.8s 0.1s both;
+}
+
+.hero-title {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(56px, 11vw, 128px);
+  line-height: 0.95;
+  color: var(--wood-dark);
+  margin-bottom: 24px;
+  letter-spacing: -0.03em;
+  animation: title-in 1s 0.2s both;
+  position: relative;
+  display: inline-block;
+}
+
+/* "i" wrap — position the cat-head over the dot */
+.title-i-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.title-i-cat {
+  position: absolute;
+  /* sit just above the natural i-dot — ears straddle it */
+  top: -0.22em;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0.5em;
+  height: 0.25em;
+  pointer-events: none;
+  transform-origin: center bottom;
+  animation: ear-twitch 5s ease-in-out infinite;
+}
+
+.title-i-cat svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+@keyframes ear-twitch {
+  0%, 92%, 100% { transform: translateX(-50%) scaleY(1); }
+  94%           { transform: translateX(-50%) scaleY(0.85); }
+  96%           { transform: translateX(-50%) scaleY(1.05); }
+}
+
+.hero-title .bell {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  vertical-align: super;
+  margin-left: 0.05em;
+  filter: drop-shadow(0 4px 6px rgba(93, 72, 40, 0.35));
+  animation: bell-fall 1.4s 1s cubic-bezier(.17,.67,.3,1.5) both, bell-swing 3s 2.4s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.hero-title .bell svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hero-subtitle {
+  font-family: var(--body);
+  font-size: clamp(15px, 1.6vw, 17px);
+  color: var(--wood);
+  margin-bottom: 36px;
+  max-width: 480px;
+  margin-inline: auto;
+  animation: fade-up 1s 0.7s both;
+  opacity: 0.85;
+}
+
+.hero-slogan {
+  font-family: var(--display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: clamp(28px, 4.5vw, 44px);
+  color: var(--moss);
+  margin-top: -8px;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+  animation: slogan-in 1s 0.55s both;
+}
+
+@keyframes slogan-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fade-up 1s 0.8s both;
+}
+
+.btn {
+  font-family: var(--body);
+  font-weight: 800;
+  font-size: 16px;
+  padding: 14px 28px;
+  border-radius: var(--radius);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 3px solid;
+}
+
+.btn-primary {
+  background: var(--bell);
+  color: var(--wood-dark);
+  border-color: var(--wood-dark);
+  box-shadow: 0 4px 0 var(--wood-dark);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 0 var(--wood-dark);
+}
+
+.btn-primary:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--wood-dark);
+}
+
+.btn-secondary {
+  background: var(--paper-light);
+  color: var(--wood-dark);
+  border-color: var(--wood);
+  box-shadow: 0 4px 0 var(--wood);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 0 var(--wood);
+}
+
+.btn-secondary:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--wood);
+}
+
+/* floating leaves */
+.leaf {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+  animation: float-leaf 8s linear infinite;
+  z-index: 1;
+}
+
+@keyframes title-in {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes tilt-in {
+  from { opacity: 0; transform: rotate(-15deg) translateY(-10px); }
+  to { opacity: 1; transform: rotate(-2deg) translateY(0); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bell-fall {
+  0% { transform: translateY(-120px) rotate(0deg); opacity: 0; }
+  60% { transform: translateY(0) rotate(-15deg); opacity: 1; }
+  75% { transform: translateY(0) rotate(8deg); }
+  90% { transform: translateY(0) rotate(-4deg); }
+  100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+}
+
+@keyframes bell-swing {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+@keyframes float-leaf {
+  0% { transform: translate(0, -50px) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.7; }
+  100% { transform: translate(var(--drift, 100px), calc(100vh + 50px)) rotate(720deg); opacity: 0; }
+}
+
+/* falling cats: slower spin, softer opacity so they read as background */
+.falling-cat {
+  animation-name: float-cat !important;
+}
+
+@keyframes float-cat {
+  0%   { transform: translate(0, -60px) rotate(-20deg); opacity: 0; }
+  15%  { opacity: 0.5; }
+  85%  { opacity: 0.5; }
+  100% { transform: translate(var(--drift, 100px), calc(100vh + 60px)) rotate(380deg); opacity: 0; }
+}
+
+/* ============================================================
+   FEATURES SECTION
+   ============================================================ */
+.section {
+  padding: 100px 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-eyebrow {
+  font-family: var(--hand);
+  font-size: 28px;
+  color: var(--moss);
+  text-align: center;
+  margin-bottom: 8px;
+  transform: rotate(-1deg);
+  display: block;
+}
+
+.section-title {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(36px, 5vw, 56px);
+  text-align: center;
+  color: var(--wood-dark);
+  margin-bottom: 16px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.section-subtitle {
+  text-align: center;
+  font-size: 18px;
+  color: var(--wood);
+  max-width: 600px;
+  margin: 0 auto 64px;
+}
+
+
+/* ============================================================
+   SCROLL WALKTHROUGH (pinned morphing scene)
+   ============================================================ */
+.walkthrough-intro {
+  text-align: center;
+  padding: 100px 24px 40px;
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.walkthrough-intro-arrow {
+  font-family: var(--display);
+  font-size: 32px;
+  color: var(--moss);
+  margin-top: 32px;
+  animation: arrow-bounce 2s ease-in-out infinite;
+}
+
+@keyframes arrow-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+
+.walkthrough {
+  position: relative;
+  /* total scroll: 5 stages × 110vh of scroll for the pinned section */
+  height: 550vh;
+  background: linear-gradient(180deg, var(--paper) 0%, var(--paper-shadow) 50%, var(--paper) 100%);
+}
+
+.walkthrough-track {
+  position: relative;
+  height: 100%;
+}
+
+.walkthrough-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  padding: 0 5vw;
+  gap: 4vw;
+}
+
+@media (max-width: 900px) {
+  .walkthrough-stage {
+    grid-template-columns: 1fr;
+    grid-template-rows: 50% 50%;
+    padding: 60px 24px 24px;
+    gap: 12px;
+  }
+}
+
+/* SCENE PANEL */
+.walkthrough-scene {
+  position: relative;
+  height: 75vh;
+  max-height: 640px;
+  border: 4px solid var(--wood-dark);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(180deg, #faf2dc 0%, #e2cfa3 100%);
+}
+
+@media (max-width: 900px) {
+  .walkthrough-scene { height: 100%; max-height: none; }
+}
+
+.scene-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* every layer starts hidden; JS toggles visibility per stage */
+.layer {
+  opacity: 0;
+  transition: opacity 0.7s ease, transform 1s cubic-bezier(.4,0,.2,1);
+  transform-origin: center;
+}
+
+.layer.show {
+  opacity: 1;
+}
+
+/* layer-specific entrance animations */
+.layer-character.show {
+  animation: char-bob 3s ease-in-out infinite;
+}
+
+@keyframes char-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.layer-sapling.show {
+  animation: sprout-up 0.8s cubic-bezier(.17,.67,.3,1.5) both;
+}
+
+@keyframes sprout-up {
+  0% { opacity: 0; transform: scaleY(0.1); transform-origin: center bottom; }
+  100% { opacity: 1; transform: scaleY(1); transform-origin: center bottom; }
+}
+
+.layer-tree.show {
+  animation: tree-grow 1.4s cubic-bezier(.17,.67,.3,1.5) both;
+}
+
+@keyframes tree-grow {
+  0% { opacity: 0; transform: scale(0.1) translateY(40%); transform-origin: center bottom; }
+  60% { opacity: 1; }
+  100% { opacity: 1; transform: scale(1) translateY(0); transform-origin: center bottom; }
+}
+
+.layer-question.show {
+  animation: card-in 0.6s cubic-bezier(.17,.67,.3,1.5) both;
+}
+
+@keyframes card-in {
+  0% { opacity: 0; transform: scale(0.85) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.layer-rays.show {
+  animation: rays-burst 1.2s ease-out both;
+}
+
+@keyframes rays-burst {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.tree-sparkles circle {
+  animation: sparkle 2.5s ease-in-out infinite;
+  transform-origin: center;
+}
+.tree-sparkles circle:nth-child(2) { animation-delay: 0.4s; }
+.tree-sparkles circle:nth-child(3) { animation-delay: 0.8s; }
+.tree-sparkles circle:nth-child(4) { animation-delay: 1.2s; }
+.tree-sparkles circle:nth-child(5) { animation-delay: 1.6s; }
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0.4); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* stage indicator dots inside the scene */
+.stage-indicator {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  background: rgba(58, 44, 26, 0.4);
+  backdrop-filter: blur(6px);
+  padding: 8px 14px;
+  border-radius: 100px;
+  z-index: 20;
+}
+
+.stage-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(250, 242, 220, 0.4);
+  transition: all 0.4s ease;
+}
+
+.stage-dot.active {
+  background: var(--bell);
+  width: 28px;
+  border-radius: 6px;
+}
+
+.stage-dot.passed {
+  background: var(--leaf-light);
+}
+
+/* CAPTIONS PANEL */
+.walkthrough-captions {
+  position: relative;
+  height: 60vh;
+  max-height: 500px;
+  display: flex;
+  align-items: center;
+  z-index: 5;
+}
+
+@media (max-width: 900px) {
+  .walkthrough-captions { height: 100%; max-height: none; padding: 16px 0; }
+}
+
+.walkthrough-step {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+}
+
+.walkthrough-step.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.walkthrough-eyebrow {
+  font-family: var(--hand);
+  font-size: clamp(20px, 2.4vw, 28px);
+  color: var(--moss);
+  margin-bottom: 8px;
+  display: inline-block;
+  transform: rotate(-1.5deg);
+}
+
+.walkthrough-heading {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.02;
+  color: var(--wood-dark);
+  margin-bottom: 18px;
+  letter-spacing: -0.02em;
+}
+
+.walkthrough-body {
+  font-size: clamp(15px, 1.4vw, 17px);
+  color: var(--wood);
+  max-width: 460px;
+  line-height: 1.65;
+}
+
+@media (max-width: 900px) {
+  .walkthrough-heading { font-size: 26px; margin-bottom: 8px; }
+  .walkthrough-body { font-size: 14px; max-width: none; }
+  .walkthrough-eyebrow { font-size: 18px; }
+}
+
+
+/* ============================================================
+   DEMO SECTION
+   ============================================================ */
+.demo-section {
+  background: var(--leaf-dark);
+  color: var(--paper-light);
+  border-top: 6px solid var(--wood-dark);
+  border-bottom: 6px solid var(--wood-dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(168, 201, 122, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(212, 165, 72, 0.1) 0%, transparent 40%);
+}
+
+.demo-section .section-eyebrow { color: var(--leaf-light); }
+.demo-section .section-title { color: var(--paper-light); }
+.demo-section .section-subtitle { color: var(--leaf-light); }
+
+.demo-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.demo-tab {
+  background: var(--paper);
+  color: var(--wood-dark);
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  font-family: var(--body);
+  font-weight: 800;
+  font-size: 15px;
+  border: 3px solid var(--wood-dark);
+  box-shadow: 0 4px 0 var(--wood-dark);
+  transition: all 0.15s ease;
+}
+
+.demo-tab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--wood-dark);
+}
+
+.demo-tab.active {
+  background: var(--bell);
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--wood-dark);
+}
+
+.demo-frame {
+  background: var(--paper);
+  border: 4px solid var(--wood-dark);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-lg);
+  color: var(--ink);
+  position: relative;
+  min-height: 580px;
+}
+
+.demo-frame-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px dashed var(--wood-light);
+}
+
+.demo-frame-title {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 24px;
+  color: var(--wood-dark);
+}
+
+.demo-frame-sub {
+  font-size: 13px;
+  color: var(--wood);
+  margin-top: 4px;
+}
+
+.demo-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--paper-light);
+  border: 2px solid var(--wood-light);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--wood-dark);
+}
+
+.demo-stat-pill {
+  background: var(--bell);
+  color: var(--wood-dark);
+  padding: 4px 12px;
+  border-radius: 100px;
+  border: 2px solid var(--wood-dark);
+  font-size: 13px;
+}
+
+.demo-pane { display: none; }
+.demo-pane.active { display: block; animation: pane-in 0.4s ease; }
+
+@keyframes pane-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   MATCHING PAIRS DEMO
+   ============================================================ */
+.match-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 32px;
+}
+
+.match-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.match-card {
+  background: var(--paper-light);
+  border: 3px solid var(--wood);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  font-family: var(--body);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--wood-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  text-align: left;
+  box-shadow: 0 3px 0 var(--wood-light);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+}
+
+.match-card::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--wood);
+  transform: translateY(-50%);
+  transition: all 0.2s;
+}
+
+.match-col.left .match-card::after { right: -8px; }
+.match-col.right .match-card::after { left: -8px; }
+
+.match-card:hover:not(.matched):not(.locked) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 var(--wood-light);
+  border-color: var(--leaf-dark);
+}
+
+.match-card.selected {
+  background: var(--bell-glow);
+  border-color: var(--wood-dark);
+  box-shadow: 0 5px 0 var(--wood-dark);
+}
+
+.match-card.selected::after {
+  background: var(--bell);
+  border-color: var(--wood-dark);
+}
+
+.match-card.matched {
+  background: var(--leaf-light);
+  border-color: var(--leaf-dark);
+  cursor: default;
+  box-shadow: 0 3px 0 var(--leaf-dark);
+}
+
+.match-card.matched::after {
+  background: var(--leaf);
+  border-color: var(--leaf-dark);
+}
+
+.match-card.wrong {
+  animation: shake 0.4s;
+  background: #f7c4be;
+  border-color: var(--berry);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* SVG line layer */
+.match-lines {
+  position: absolute;
+  inset: 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   LABEL THE PICTURE DEMO
+   ============================================================ */
+.label-stage {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .label-stage { grid-template-columns: 1fr; }
+}
+
+.label-canvas {
+  position: relative;
+  background: var(--paper-light);
+  border: 3px solid var(--wood);
+  border-radius: var(--radius);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.label-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.label-hotspot {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--paper-light);
+  border: 3px dashed var(--wood-dark);
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--wood-dark);
+  transition: all 0.3s;
+  z-index: 5;
+}
+
+.label-hotspot.over {
+  background: var(--bell-glow);
+  border-style: solid;
+  transform: translate(-50%, -50%) scale(1.4);
+}
+
+.label-hotspot.filled {
+  background: var(--leaf-light);
+  border: 3px solid var(--leaf-dark);
+  border-style: solid;
+  width: auto;
+  min-width: 90px;
+  height: auto;
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 4;
+}
+
+.label-tray {
+  background: var(--paper-light);
+  border: 3px solid var(--wood);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+}
+
+.label-tray-title {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--wood);
+  text-align: center;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.label-chip {
+  background: var(--bell-glow);
+  border: 3px solid var(--wood-dark);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-family: var(--body);
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--wood-dark);
+  cursor: grab;
+  text-align: center;
+  box-shadow: 0 3px 0 var(--wood-dark);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  touch-action: none;
+}
+
+.label-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 var(--wood-dark);
+}
+
+.label-chip:active,
+.label-chip.dragging {
+  cursor: grabbing;
+  opacity: 0.7;
+}
+
+.label-chip.placed {
+  display: none;
+}
+
+/* completion message */
+.demo-toast {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background: var(--leaf);
+  color: var(--paper-light);
+  padding: 14px 28px;
+  border-radius: 100px;
+  border: 3px solid var(--leaf-dark);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 18px;
+  box-shadow: var(--shadow);
+  transition: transform 0.5s cubic-bezier(.17,.67,.3,1.5);
+  z-index: 10;
+}
+
+.demo-toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  background: var(--wood-dark);
+  color: var(--paper);
+  padding: 60px 24px 32px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.footer-title {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 32px;
+  color: var(--paper-light);
+  margin-bottom: 12px;
+}
+
+.footer-tagline {
+  font-family: var(--hand);
+  font-size: 22px;
+  color: var(--bell-glow);
+  margin-bottom: 24px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  font-weight: 800;
+}
+
+.footer-links a:hover { color: var(--bell-glow); }
+
+.footer-meta {
+  font-size: 13px;
+  color: var(--wood-light);
+  border-top: 1px solid var(--wood);
+  padding-top: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   UTIL
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     NAV
+     ============================================================ -->
+<nav class="nav">
+  <div class="nav-logo">
+    <svg class="nav-logo-mark" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+      <!-- ears -->
+      <path d="M 5 11 L 4 3 L 10 8 Z" fill="#f4e8cf" stroke="#5d4828" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M 19 11 L 20 3 L 14 8 Z" fill="#f4e8cf" stroke="#5d4828" stroke-width="1.4" stroke-linejoin="round"/>
+      <!-- head -->
+      <ellipse cx="12" cy="13" rx="7" ry="6.5" fill="#f4e8cf" stroke="#5d4828" stroke-width="1.4"/>
+      <!-- closed eyes -->
+      <path d="M 8.5 13 Q 9.5 14, 10.5 13" stroke="#5d4828" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+      <path d="M 13.5 13 Q 14.5 14, 15.5 13" stroke="#5d4828" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+      <!-- tiny nose -->
+      <circle cx="12" cy="15.2" r="0.7" fill="#e8a5b0"/>
+      <!-- whiskers -->
+      <line x1="2" y1="14" x2="6" y2="14.4" stroke="#5d4828" stroke-width="0.7" stroke-linecap="round"/>
+      <line x1="18" y1="14.4" x2="22" y2="14" stroke="#5d4828" stroke-width="0.7" stroke-linecap="round"/>
+    </svg>
+    mKitty
+  </div>
+  <div class="nav-links">
+    <a href="#features">How it works</a>
+    <a href="#demo">Try it</a>
+  </div>
+  <a href="#demo" class="nav-cta">Play Demo</a>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero">
+  <div class="hero-scene" aria-hidden="true">
+    <!-- floating leaves get injected here by JS -->
+  </div>
+
+  <div class="hero-content">
+    <span class="hero-tagline">the MCAT prep that grows on you</span>
+    <h1 class="hero-title">
+      <span class="title-text">m<span class="title-K">K</span><span class="title-i-wrap">i<span class="title-i-cat" aria-hidden="true">
+        <svg viewBox="0 0 24 12" xmlns="http://www.w3.org/2000/svg">
+          <!-- left ear -->
+          <path d="M 4 11 L 2 1 L 11 9 Z" fill="#5d4828" stroke="#5d4828" stroke-width="0.8" stroke-linejoin="round"/>
+          <!-- right ear -->
+          <path d="M 20 11 L 22 1 L 13 9 Z" fill="#5d4828" stroke="#5d4828" stroke-width="0.8" stroke-linejoin="round"/>
+        </svg>
+      </span></span>tty</span><!--
+      --><span class="bell" id="hero-logo" aria-label="mKitty mascot">
+        <!-- Hero mascot — minimalist sitting cat, neutral cream + warm dark outline -->
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <!-- ears (rendered first, behind head) -->
+          <path d="M 28 38 L 24 18 L 42 30 Z"
+                fill="#f4e8cf" stroke="#5d4828" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M 72 38 L 76 18 L 58 30 Z"
+                fill="#f4e8cf" stroke="#5d4828" stroke-width="3" stroke-linejoin="round"/>
+          <!-- inner ears (subtle warm pink) -->
+          <path d="M 30 34 L 28 23 L 38 30 Z" fill="#e8a5b0" opacity="0.7"/>
+          <path d="M 70 34 L 72 23 L 62 30 Z" fill="#e8a5b0" opacity="0.7"/>
+          <!-- head -->
+          <ellipse cx="50" cy="46" rx="24" ry="22"
+                   fill="#f4e8cf" stroke="#5d4828" stroke-width="3"/>
+          <!-- closed/content eyes -->
+          <path d="M 38 46 Q 42 49, 46 46" stroke="#5d4828" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M 54 46 Q 58 49, 62 46" stroke="#5d4828" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- nose -->
+          <path d="M 47 53 L 53 53 L 50 56 Z" fill="#e8a5b0" stroke="#5d4828" stroke-width="1.2" stroke-linejoin="round"/>
+          <!-- mouth -->
+          <path d="M 50 56 Q 47 59, 44 57" stroke="#5d4828" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M 50 56 Q 53 59, 56 57" stroke="#5d4828" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <!-- whiskers -->
+          <line x1="22" y1="52" x2="36" y2="54" stroke="#5d4828" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="22" y1="56" x2="36" y2="56" stroke="#5d4828" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="64" y1="54" x2="78" y2="52" stroke="#5d4828" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="64" y1="56" x2="78" y2="56" stroke="#5d4828" stroke-width="1.2" stroke-linecap="round"/>
+          <!-- body -->
+          <path d="M 30 64
+                   Q 28 80, 32 92
+                   Q 50 96, 68 92
+                   Q 72 80, 70 64 Z"
+                fill="#f4e8cf" stroke="#5d4828" stroke-width="3" stroke-linejoin="round"/>
+          <!-- front paws -->
+          <ellipse cx="38" cy="92" rx="6" ry="4" fill="#f4e8cf" stroke="#5d4828" stroke-width="2.5"/>
+          <ellipse cx="62" cy="92" rx="6" ry="4" fill="#f4e8cf" stroke="#5d4828" stroke-width="2.5"/>
+          <!-- tail -->
+          <path d="M 70 80
+                   Q 88 78, 90 64
+                   Q 90 56, 82 56"
+                fill="none" stroke="#5d4828" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </span>
+    </h1>
+    <p class="hero-slogan">grows on you.</p>
+    <p class="hero-subtitle">
+      A free, open-source study RPG for med-school hopefuls.
+      Plant a tree for every subject. Water it daily. Make studying
+      feel like Sunday morning.
+    </p>
+    <div class="hero-buttons">
+      <a href="#demo" class="btn btn-primary">Try the demo</a>
+      <a href="#features" class="btn btn-secondary">Learn more</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SCROLLYTELLING WALKTHROUGH
+     ============================================================ -->
+<div class="walkthrough-intro">
+  <span class="section-eyebrow">how it works</span>
+  <h2 class="section-title">A garden, not a grind.</h2>
+  <p class="section-subtitle">
+    Five steps. Fifteen minutes a day. Scroll to walk through a session.
+  </p>
+  <div class="walkthrough-intro-arrow" aria-hidden="true">↓</div>
+</div>
+
+<section class="walkthrough" id="features" aria-label="How mKitty works">
+  <div class="walkthrough-track">
+    <!-- Pinned stage -->
+    <div class="walkthrough-stage">
+      <div class="walkthrough-scene">
+        <svg class="scene-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <radialGradient id="sky-grad" cx="50%" cy="40%">
+              <stop offset="0%" stop-color="#faf2dc"/>
+              <stop offset="100%" stop-color="#e2cfa3"/>
+            </radialGradient>
+            <linearGradient id="ground-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#a8c97a"/>
+              <stop offset="100%" stop-color="#6b8e3d"/>
+            </linearGradient>
+            <linearGradient id="forest-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3f5825"/>
+              <stop offset="100%" stop-color="#2a3d18"/>
+            </linearGradient>
+            <linearGradient id="trunk-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#8b6f47"/>
+              <stop offset="100%" stop-color="#5d4828"/>
+            </linearGradient>
+            <radialGradient id="sun-grad" cx="50%" cy="50%">
+              <stop offset="0%" stop-color="#f7d574"/>
+              <stop offset="60%" stop-color="#d4a548" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#d4a548" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Sky background -->
+          <rect width="600" height="600" fill="url(#sky-grad)"/>
+
+          <!-- ============== LAYER: SUN ============== -->
+          <g class="layer layer-sun">
+            <circle cx="480" cy="120" r="80" fill="url(#sun-grad)"/>
+            <circle cx="480" cy="120" r="32" fill="#f7d574" stroke="#d4a548" stroke-width="2"/>
+          </g>
+
+          <!-- ============== LAYER: DISTANT MOUNTAINS ============== -->
+          <g class="layer layer-mountains">
+            <path d="M 0 380 L 100 280 L 200 340 L 300 240 L 400 320 L 500 270 L 600 360 L 600 600 L 0 600 Z"
+                  fill="#8b6f47" opacity="0.4"/>
+            <path d="M 0 420 L 80 360 L 180 410 L 260 340 L 360 400 L 450 350 L 540 410 L 600 380 L 600 600 L 0 600 Z"
+                  fill="#5d4828" opacity="0.35"/>
+          </g>
+
+          <!-- ============== LAYER: BIOME (rainforest) ============== -->
+          <g class="layer layer-biome">
+            <!-- distant tree silhouettes -->
+            <ellipse cx="80" cy="380" rx="60" ry="80" fill="url(#forest-grad)" opacity="0.85"/>
+            <ellipse cx="160" cy="360" rx="70" ry="100" fill="url(#forest-grad)" opacity="0.85"/>
+            <ellipse cx="260" cy="380" rx="55" ry="85" fill="url(#forest-grad)" opacity="0.85"/>
+            <ellipse cx="350" cy="350" rx="75" ry="110" fill="url(#forest-grad)" opacity="0.85"/>
+            <ellipse cx="450" cy="370" rx="65" ry="95" fill="url(#forest-grad)" opacity="0.85"/>
+            <ellipse cx="540" cy="380" rx="60" ry="85" fill="url(#forest-grad)" opacity="0.85"/>
+            <!-- trunks -->
+            <rect x="73" y="430" width="14" height="70" fill="#5d4828"/>
+            <rect x="153" y="440" width="14" height="60" fill="#5d4828"/>
+            <rect x="253" y="450" width="14" height="50" fill="#5d4828"/>
+            <rect x="343" y="440" width="14" height="60" fill="#5d4828"/>
+            <rect x="443" y="450" width="14" height="50" fill="#5d4828"/>
+            <rect x="533" y="450" width="14" height="50" fill="#5d4828"/>
+            <!-- biome path -->
+            <path d="M 100 580 Q 250 520, 350 500 T 540 440"
+                  stroke="#d4a548" stroke-width="6" stroke-linecap="round"
+                  fill="none" stroke-dasharray="2 14" opacity="0.7"/>
+          </g>
+
+          <!-- ============== LAYER: GROUND (always visible-ish) ============== -->
+          <g class="layer layer-ground">
+            <ellipse cx="300" cy="540" rx="320" ry="80" fill="url(#ground-grad)"/>
+            <!-- grass tufts -->
+            <path d="M 120 510 L 124 498 L 128 510" stroke="#3f5825" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M 160 522 L 164 510 L 168 522" stroke="#3f5825" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M 460 520 L 464 508 L 468 520" stroke="#3f5825" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M 510 532 L 514 520 L 518 532" stroke="#3f5825" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </g>
+
+          <!-- ============== LAYER: FARM PLOT ============== -->
+          <g class="layer layer-farm">
+            <!-- soil patch -->
+            <ellipse cx="300" cy="500" rx="160" ry="40" fill="#8b6f47" stroke="#5d4828" stroke-width="3"/>
+            <!-- furrow lines -->
+            <path d="M 180 500 Q 300 488, 420 500" stroke="#5d4828" stroke-width="1.5" fill="none" opacity="0.4"/>
+            <path d="M 180 510 Q 300 498, 420 510" stroke="#5d4828" stroke-width="1.5" fill="none" opacity="0.4"/>
+            <!-- little fence corners -->
+            <g stroke="#5d4828" stroke-width="2" stroke-linecap="round">
+              <line x1="155" y1="490" x2="155" y2="510"/>
+              <line x1="148" y1="498" x2="162" y2="498"/>
+              <line x1="445" y1="490" x2="445" y2="510"/>
+              <line x1="438" y1="498" x2="452" y2="498"/>
+            </g>
+          </g>
+
+          <!-- ============== LAYER: SEED ============== -->
+          <g class="layer layer-seed">
+            <!-- seed buried -->
+            <ellipse cx="300" cy="500" rx="8" ry="11" fill="#5d4828" stroke="#3a2c1a" stroke-width="1.5"/>
+            <path d="M 296 495 Q 300 498, 304 495" stroke="#faf2dc" stroke-width="1" fill="none" opacity="0.6"/>
+          </g>
+
+          <!-- ============== LAYER: CHARACTER ============== -->
+          <g class="layer layer-character">
+            <!-- shadow -->
+            <ellipse cx="300" cy="540" rx="22" ry="5" fill="#5d4828" opacity="0.3"/>
+            <!-- body (cat-ish) -->
+            <ellipse cx="300" cy="510" rx="20" ry="22" fill="#f4e8cf" stroke="#5d4828" stroke-width="2.5"/>
+            <!-- head -->
+            <circle cx="300" cy="478" r="18" fill="#f4e8cf" stroke="#5d4828" stroke-width="2.5"/>
+            <!-- ears -->
+            <path d="M 285 466 L 282 452 L 294 462 Z" fill="#f4e8cf" stroke="#5d4828" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M 315 466 L 318 452 L 306 462 Z" fill="#f4e8cf" stroke="#5d4828" stroke-width="2" stroke-linejoin="round"/>
+            <!-- inner ears -->
+            <path d="M 286 463 L 285 456 L 291 461 Z" fill="#e8a5b0"/>
+            <path d="M 314 463 L 315 456 L 309 461 Z" fill="#e8a5b0"/>
+            <!-- eyes -->
+            <circle cx="293" cy="478" r="2.5" fill="#3a2c1a"/>
+            <circle cx="307" cy="478" r="2.5" fill="#3a2c1a"/>
+            <!-- nose & mouth -->
+            <path d="M 298 484 L 302 484 L 300 487 Z" fill="#e8a5b0"/>
+            <path d="M 300 487 Q 296 491, 293 489" stroke="#3a2c1a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M 300 487 Q 304 491, 307 489" stroke="#3a2c1a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <!-- whiskers -->
+            <line x1="278" y1="484" x2="288" y2="485" stroke="#5d4828" stroke-width="1"/>
+            <line x1="312" y1="485" x2="322" y2="484" stroke="#5d4828" stroke-width="1"/>
+          </g>
+
+          <!-- ============== LAYER: SAPLING ============== -->
+          <g class="layer layer-sapling">
+            <!-- stem -->
+            <path d="M 300 500 V 470" stroke="#3f5825" stroke-width="3" stroke-linecap="round"/>
+            <!-- two leaves -->
+            <path d="M 300 482 C 290 482, 285 476, 285 470 C 292 470, 300 474, 300 482 Z"
+                  fill="#a8c97a" stroke="#3f5825" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M 300 478 C 310 478, 315 472, 315 466 C 308 466, 300 470, 300 478 Z"
+                  fill="#a8c97a" stroke="#3f5825" stroke-width="2" stroke-linejoin="round"/>
+          </g>
+
+          <!-- ============== LAYER: TREE ============== -->
+          <g class="layer layer-tree">
+            <!-- trunk -->
+            <path d="M 295 500 Q 290 460, 296 420 Q 295 380, 300 350 Q 305 380, 304 420 Q 310 460, 305 500 Z"
+                  fill="url(#trunk-grad)" stroke="#3a2c1a" stroke-width="2.5" stroke-linejoin="round"/>
+            <!-- main canopy -->
+            <ellipse cx="300" cy="290" rx="120" ry="80" fill="#6b8e3d" stroke="#3f5825" stroke-width="3"/>
+            <ellipse cx="240" cy="270" rx="55" ry="45" fill="#a8c97a" stroke="#3f5825" stroke-width="2" opacity="0.85"/>
+            <ellipse cx="360" cy="265" rx="55" ry="45" fill="#a8c97a" stroke="#3f5825" stroke-width="2" opacity="0.85"/>
+            <ellipse cx="300" cy="240" rx="60" ry="40" fill="#a8c97a" stroke="#3f5825" stroke-width="2" opacity="0.85"/>
+            <!-- ornaments -->
+            <circle cx="240" cy="300" r="8" fill="#d4a548" stroke="#5d4828" stroke-width="2"/>
+            <circle cx="350" cy="310" r="8" fill="#c44a3a" stroke="#5d4828" stroke-width="2"/>
+            <circle cx="290" cy="330" r="7" fill="#e8a5b0" stroke="#5d4828" stroke-width="2"/>
+            <circle cx="320" cy="270" r="7" fill="#b8d4e0" stroke="#5d4828" stroke-width="2"/>
+            <circle cx="265" cy="250" r="6" fill="#d4a548" stroke="#5d4828" stroke-width="2"/>
+            <!-- aura sparkles -->
+            <g class="tree-sparkles">
+              <circle cx="200" cy="220" r="3" fill="#f7d574" opacity="0.8"/>
+              <circle cx="400" cy="200" r="3" fill="#f7d574" opacity="0.8"/>
+              <circle cx="180" cy="320" r="2.5" fill="#f7d574" opacity="0.8"/>
+              <circle cx="420" cy="340" r="2.5" fill="#f7d574" opacity="0.8"/>
+              <circle cx="300" cy="180" r="3" fill="#f7d574" opacity="0.8"/>
+            </g>
+          </g>
+
+          <!-- ============== LAYER: QUESTION CARD (overlay) ============== -->
+          <g class="layer layer-question">
+            <rect x="160" y="180" width="280" height="160" rx="20"
+                  fill="#faf2dc" stroke="#5d4828" stroke-width="4"/>
+            <text x="300" y="220" text-anchor="middle" fill="#5d4828"
+                  font-family="Fraunces, Georgia, serif" font-weight="700" font-size="18">
+              What pumps blood?
+            </text>
+            <!-- choices -->
+            <rect x="180" y="240" width="240" height="26" rx="8" fill="#f4e8cf" stroke="#8b6f47" stroke-width="2"/>
+            <text x="300" y="258" text-anchor="middle" fill="#5d4828"
+                  font-family="Sniglet, sans-serif" font-weight="800" font-size="13">
+              Stomach
+            </text>
+            <rect x="180" y="272" width="240" height="26" rx="8" fill="#a8c97a" stroke="#3f5825" stroke-width="2.5"/>
+            <text x="300" y="290" text-anchor="middle" fill="#3a2c1a"
+                  font-family="Sniglet, sans-serif" font-weight="800" font-size="13">
+              Heart ✓
+            </text>
+            <rect x="180" y="304" width="240" height="26" rx="8" fill="#f4e8cf" stroke="#8b6f47" stroke-width="2"/>
+            <text x="300" y="322" text-anchor="middle" fill="#5d4828"
+                  font-family="Sniglet, sans-serif" font-weight="800" font-size="13">
+              Lungs
+            </text>
+          </g>
+
+          <!-- ============== LAYER: RAYS (final celebration) ============== -->
+          <g class="layer layer-rays">
+            <g stroke="#f7d574" stroke-width="3" opacity="0.6" stroke-linecap="round">
+              <line x1="300" y1="100" x2="300" y2="60"/>
+              <line x1="180" y1="180" x2="150" y2="150"/>
+              <line x1="420" y1="180" x2="450" y2="150"/>
+              <line x1="120" y1="290" x2="80" y2="290"/>
+              <line x1="480" y1="290" x2="520" y2="290"/>
+            </g>
+          </g>
+        </svg>
+
+        <!-- Stage indicator dots -->
+        <div class="stage-indicator" aria-hidden="true">
+          <span class="stage-dot" data-step="0"></span>
+          <span class="stage-dot" data-step="1"></span>
+          <span class="stage-dot" data-step="2"></span>
+          <span class="stage-dot" data-step="3"></span>
+          <span class="stage-dot" data-step="4"></span>
+        </div>
+      </div>
+
+      <!-- Side captions -->
+      <div class="walkthrough-captions">
+        <div class="walkthrough-step" data-step="0">
+          <span class="walkthrough-eyebrow">step one</span>
+          <h3 class="walkthrough-heading">Start at your farm.</h3>
+          <p class="walkthrough-body">
+            Every session begins here — a quiet plot of land, a few seeds in
+            your pocket, and trees you've already grown. No login walls. No ads.
+            No streak-shaming popups.
+          </p>
+        </div>
+
+        <div class="walkthrough-step" data-step="1">
+          <span class="walkthrough-eyebrow">step two</span>
+          <h3 class="walkthrough-heading">Travel to a biome.</h3>
+          <p class="walkthrough-body">
+            Each MCAT subject is its own world. Biology is a rainforest. Physics
+            is a mountain. CARS is a cave with stories to read. Pick a path and
+            explore.
+          </p>
+        </div>
+
+        <div class="walkthrough-step" data-step="2">
+          <span class="walkthrough-eyebrow">step three</span>
+          <h3 class="walkthrough-heading">Learn at checkpoints.</h3>
+          <p class="walkthrough-body">
+            Watch a Khan Academy video, take notes in the in-game notebook, then
+            answer a few questions to prove you've got it. Wrong? No penalty —
+            just try again.
+          </p>
+        </div>
+
+        <div class="walkthrough-step" data-step="3">
+          <span class="walkthrough-eyebrow">step four</span>
+          <h3 class="walkthrough-heading">Collect a seed.</h3>
+          <p class="walkthrough-body">
+            Finish the biome and you'll receive a seed for that subject. Bring it
+            home, plant it in your farm, and the real game begins.
+          </p>
+        </div>
+
+        <div class="walkthrough-step" data-step="4">
+          <span class="walkthrough-eyebrow">step five</span>
+          <h3 class="walkthrough-heading">Grow it daily.</h3>
+          <p class="walkthrough-body">
+            Water your tree by answering review questions every day. It'll grow
+            from sapling to towering tree as you build mastery — and you can
+            decorate it with ornaments earned along the way.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ============================================================
+     DEMO
+     ============================================================ -->
+<section class="section demo-section" id="demo">
+  <div class="section-inner">
+    <span class="section-eyebrow">try it now</span>
+    <h2 class="section-title">Play the learning loop.</h2>
+    <p class="section-subtitle">
+      These are early prototypes of the question UIs. They work right here in your
+      browser — no install, no signup. Click around.
+    </p>
+
+    <div class="demo-tabs">
+      <button class="demo-tab active" data-tab="match">Match the Pairs</button>
+      <button class="demo-tab" data-tab="label">Label the Picture</button>
+    </div>
+
+    <div class="demo-frame">
+      <!-- MATCHING PAIRS -->
+      <div class="demo-pane active" data-pane="match">
+        <div class="demo-frame-header">
+          <div class="demo-frame-title">Anatomy: Match Organs to Function</div>
+          <div class="demo-frame-sub">Click an item on the left, then its match on the right.</div>
+        </div>
+        <div class="demo-stats">
+          <span>Attempts: <span id="match-attempts">0</span></span>
+          <span class="demo-stat-pill">Correct: <span id="match-correct">0</span> / 6</span>
+          <button id="match-reset" class="demo-tab" style="padding: 6px 14px; font-size: 13px; box-shadow: 0 3px 0 var(--wood-dark);">New Game</button>
+        </div>
+        <div class="match-board" id="match-board">
+          <div class="match-col left" id="match-left"></div>
+          <div class="match-col right" id="match-right"></div>
+        </div>
+      </div>
+
+      <!-- LABEL THE PICTURE -->
+      <div class="demo-pane" data-pane="label">
+        <div class="demo-frame-header">
+          <div class="demo-frame-title">Anatomy: Label the Heart</div>
+          <div class="demo-frame-sub">Drag each label onto the matching dashed circle.</div>
+        </div>
+        <div class="demo-stats">
+          <span>Placed: <span id="label-placed">0</span> / 4</span>
+          <span class="demo-stat-pill" id="label-status">Drag to begin</span>
+          <button id="label-reset" class="demo-tab" style="padding: 6px 14px; font-size: 13px; box-shadow: 0 3px 0 var(--wood-dark);">Reset</button>
+        </div>
+        <div class="label-stage">
+          <div class="label-canvas" id="label-canvas">
+            <svg class="label-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+              <!-- stylized heart anatomy diagram -->
+              <defs>
+                <radialGradient id="heart-grad" cx="50%" cy="40%">
+                  <stop offset="0%" stop-color="#e8a5b0"/>
+                  <stop offset="100%" stop-color="#c44a3a"/>
+                </radialGradient>
+              </defs>
+              <!-- background paper -->
+              <rect width="400" height="300" fill="#faf2dc"/>
+              <!-- subtle grid -->
+              <g stroke="#e2cfa3" stroke-width="0.5" opacity="0.4">
+                <line x1="0" y1="75" x2="400" y2="75"/>
+                <line x1="0" y1="150" x2="400" y2="150"/>
+                <line x1="0" y1="225" x2="400" y2="225"/>
+                <line x1="100" y1="0" x2="100" y2="300"/>
+                <line x1="200" y1="0" x2="200" y2="300"/>
+                <line x1="300" y1="0" x2="300" y2="300"/>
+              </g>
+              <!-- vena cava -->
+              <path d="M 130 30 Q 140 60 150 90" stroke="#5a7fb0" stroke-width="14" fill="none" stroke-linecap="round" opacity="0.7"/>
+              <!-- aorta arch -->
+              <path d="M 220 30 Q 240 60 230 100 Q 225 110 215 110" stroke="#c44a3a" stroke-width="14" fill="none" stroke-linecap="round" opacity="0.85"/>
+              <!-- pulmonary artery -->
+              <path d="M 180 30 Q 175 50 185 80" stroke="#5a7fb0" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.75"/>
+              <!-- main heart shape (stylized) -->
+              <path d="M 200 110
+                       C 160 80, 110 100, 110 150
+                       C 110 200, 170 240, 200 260
+                       C 230 240, 290 200, 290 150
+                       C 290 100, 240 80, 200 110 Z"
+                    fill="url(#heart-grad)" stroke="#5d4828" stroke-width="3"/>
+              <!-- chamber divider -->
+              <path d="M 200 110 Q 200 180 200 245" stroke="#5d4828" stroke-width="2" fill="none" opacity="0.4" stroke-dasharray="4 4"/>
+              <!-- atrium divider -->
+              <path d="M 130 145 Q 200 135 270 145" stroke="#5d4828" stroke-width="2" fill="none" opacity="0.4" stroke-dasharray="4 4"/>
+              <!-- L/R labels (subtle) -->
+              <text x="160" y="125" fill="#5d4828" font-size="9" opacity="0.5" font-family="serif" font-style="italic">L atrium</text>
+              <text x="225" y="125" fill="#5d4828" font-size="9" opacity="0.5" font-family="serif" font-style="italic">R atrium</text>
+              <text x="155" y="200" fill="#5d4828" font-size="9" opacity="0.5" font-family="serif" font-style="italic">L ventricle</text>
+              <text x="225" y="200" fill="#5d4828" font-size="9" opacity="0.5" font-family="serif" font-style="italic">R ventricle</text>
+            </svg>
+            <!-- hotspots positioned by % -->
+            <div class="label-hotspot" data-id="aorta" style="left: 57%; top: 18%;">?</div>
+            <div class="label-hotspot" data-id="pulmonary" style="left: 45%; top: 18%;">?</div>
+            <div class="label-hotspot" data-id="left-ventricle" style="left: 40%; top: 67%;">?</div>
+            <div class="label-hotspot" data-id="right-ventricle" style="left: 60%; top: 67%;">?</div>
+          </div>
+          <div class="label-tray" id="label-tray">
+            <div class="label-tray-title">Labels</div>
+            <!-- chips injected here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- shared toast -->
+      <div class="demo-toast" id="demo-toast">Nice work!</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="footer">
+  <div class="footer-title">
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" style="vertical-align: -5px; margin-right: 6px;">
+      <!-- ears -->
+      <path d="M 5 11 L 4 3 L 10 8 Z" fill="#faf2dc" stroke="#3a2c1a" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M 19 11 L 20 3 L 14 8 Z" fill="#faf2dc" stroke="#3a2c1a" stroke-width="1.4" stroke-linejoin="round"/>
+      <!-- head -->
+      <ellipse cx="12" cy="13" rx="7" ry="6.5" fill="#faf2dc" stroke="#3a2c1a" stroke-width="1.4"/>
+      <!-- closed eyes -->
+      <path d="M 8.5 13 Q 9.5 14, 10.5 13" stroke="#3a2c1a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+      <path d="M 13.5 13 Q 14.5 14, 15.5 13" stroke="#3a2c1a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+      <!-- tiny nose -->
+      <circle cx="12" cy="15.2" r="0.7" fill="#e8a5b0"/>
+      <!-- whiskers -->
+      <line x1="2" y1="14" x2="6" y2="14.4" stroke="#3a2c1a" stroke-width="0.7" stroke-linecap="round"/>
+      <line x1="18" y1="14.4" x2="22" y2="14" stroke="#3a2c1a" stroke-width="0.7" stroke-linecap="round"/>
+    </svg>
+    mKitty
+  </div>
+  <div class="footer-tagline">the MCAT prep that grows on you</div>
+  <div class="footer-links">
+    <a href="#features">How it works</a>
+    <a href="#demo">Try it</a>
+    <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+  </div>
+  <div class="footer-meta">
+    Free and open-source under MIT license. Built by a pre-med student who
+    wanted a cozier way to study. Inspired by Animal Crossing and Stardew Valley.
+    No affiliation with the AAMC.
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   FLOATING LEAVES + OCCASIONAL CATS (hero ambient)
+   ============================================================ */
+(function spawnLeaves() {
+  const scene = document.querySelector('.hero-scene');
+  if (!scene) return;
+
+  const leafSVG = (color) => `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 14C4 8 9 3 16 3C18 3 20 4 21 5C20 12 14 18 8 18C6 18 4 17 4 14Z" fill="${color}" stroke="#3f5825" stroke-width="1.2"/><path d="M4 14C8 12 14 8 21 5" stroke="#3f5825" stroke-width="0.8" fill="none"/></svg>`;
+
+  // tiny tumbling cat silhouette — abstract enough to read at small size
+  const catSVG = () => `<svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="14" cy="16" rx="9" ry="7.5" fill="#5d4828"/>
+    <path d="M 6 12 L 4 4 L 11 9 Z" fill="#5d4828"/>
+    <path d="M 22 12 L 24 4 L 17 9 Z" fill="#5d4828"/>
+    <path d="M 22 18 Q 28 18, 27 12" stroke="#5d4828" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  </svg>`;
+
+  const colors = ['#a8c97a', '#6b8e3d', '#d4a548', '#e8a5b0', '#a8c97a'];
+
+  function spawnOne(isCat = false) {
+    const el = document.createElement('div');
+    el.className = isCat ? 'leaf falling-cat' : 'leaf';
+    el.style.left = Math.random() * 100 + '%';
+    el.style.top = '-60px';
+    el.style.setProperty('--drift', (Math.random() * 200 - 100) + 'px');
+    // cats fall a bit slower and bigger, so they read clearly
+    if (isCat) {
+      el.style.width = '22px';
+      el.style.height = '22px';
+      el.style.animationDuration = (12 + Math.random() * 6) + 's';
+      el.innerHTML = catSVG();
+    } else {
+      el.style.animationDuration = (8 + Math.random() * 8) + 's';
+      el.innerHTML = leafSVG(colors[Math.floor(Math.random() * colors.length)]);
+    }
+    scene.appendChild(el);
+    setTimeout(() => el.remove(), 20000);
+  }
+
+  // initial burst — leaves only
+  for (let i = 0; i < 14; i++) {
+    setTimeout(() => spawnOne(false), i * 800);
+  }
+
+  // ongoing — leaves frequently, cats occasionally (~12% of spawns)
+  setInterval(() => {
+    spawnOne(Math.random() < 0.12);
+  }, 2500);
+})();
+
+/* ============================================================
+   WALKTHROUGH (scroll-pinned morphing scene)
+   ============================================================ */
+(function walkthrough() {
+  const section = document.querySelector('.walkthrough');
+  if (!section) return;
+
+  const NUM_STEPS = 5;
+  const steps = document.querySelectorAll('.walkthrough-step');
+  const dots = document.querySelectorAll('.stage-dot');
+  const sceneSvg = document.querySelector('.scene-svg');
+
+  // Map each step index to the set of layer classes that should be visible.
+  // Layers are additive — once "ground" appears, it stays through subsequent stages
+  // unless explicitly removed. We compute the active set per stage.
+  const layersByStep = [
+    // Step 0 — Farm: sky, sun, distant mountains (faded), ground, farm plot, character
+    ['sun', 'mountains', 'ground', 'farm', 'character'],
+    // Step 1 — Travel to biome: sun, mountains, ground, biome, character
+    ['sun', 'mountains', 'ground', 'biome', 'character'],
+    // Step 2 — Learn: sun, biome, ground, character, question card overlay
+    ['sun', 'mountains', 'ground', 'biome', 'character', 'question'],
+    // Step 3 — Collect seed: back at farm, seed visible
+    ['sun', 'mountains', 'ground', 'farm', 'character', 'seed'],
+    // Step 4 — Tree growing: ground, farm, mature tree with sparkles
+    ['sun', 'mountains', 'ground', 'farm', 'tree', 'rays']
+  ];
+
+  let currentStep = -1;
+
+  function setStep(step) {
+    if (step === currentStep) return;
+    currentStep = step;
+
+    // Update layers
+    const active = new Set(layersByStep[step] || []);
+    sceneSvg.querySelectorAll('.layer').forEach((layer) => {
+      const layerName = [...layer.classList].find(c => c.startsWith('layer-'))?.replace('layer-', '');
+      if (active.has(layerName)) {
+        layer.classList.add('show');
+      } else {
+        layer.classList.remove('show');
+      }
+    });
+
+    // Update captions
+    steps.forEach((s, i) => s.classList.toggle('active', i === step));
+
+    // Update progress dots
+    dots.forEach((d, i) => {
+      d.classList.toggle('active', i === step);
+      d.classList.toggle('passed', i < step);
+    });
+  }
+
+  // Throttled scroll handler with rAF
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const rect = section.getBoundingClientRect();
+      const totalScrollable = rect.height - window.innerHeight;
+      // progress: 0 when section top hits viewport top, 1 when bottom hits viewport bottom
+      const progress = Math.max(0, Math.min(1, -rect.top / totalScrollable));
+      // map progress to step index 0..NUM_STEPS-1
+      // Use slight inset so the first/last steps get visible time
+      const stepFloat = progress * NUM_STEPS;
+      const step = Math.min(NUM_STEPS - 1, Math.max(0, Math.floor(stepFloat)));
+      setStep(step);
+    });
+  }
+
+  // Initial state
+  setStep(0);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  onScroll();
+})();
+
+
+(function reveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+})();
+
+/* ============================================================
+   DEMO TABS
+   ============================================================ */
+document.querySelectorAll('.demo-tab[data-tab]').forEach((tab) => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
+    document.querySelectorAll('.demo-tab[data-tab]').forEach((t) => t.classList.toggle('active', t === tab));
+    document.querySelectorAll('.demo-pane').forEach((p) => p.classList.toggle('active', p.dataset.pane === target));
+  });
+});
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+function showToast(msg) {
+  const toast = document.getElementById('demo-toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => toast.classList.remove('show'), 2400);
+}
+
+/* ============================================================
+   MATCHING PAIRS
+   ============================================================ */
+const matchPairs = [
+  { left: 'Heart',   right: 'Pumps blood' },
+  { left: 'Brain',   right: 'Coordinates thought' },
+  { left: 'Stomach', right: 'Digests food' },
+  { left: 'Lungs',   right: 'Exchanges gases' },
+  { left: 'Liver',   right: 'Filters toxins' },
+  { left: 'Kidneys', right: 'Filters waste' }
+];
+
+let matchState = {
+  selectedLeft: null,
+  selectedRight: null,
+  matchedIds: new Set(),
+  attempts: 0,
+  locked: false
+};
+
+function shuffle(arr) {
+  return arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((p) => p[1]);
+}
+
+function renderMatch() {
+  const leftCol = document.getElementById('match-left');
+  const rightCol = document.getElementById('match-right');
+  leftCol.innerHTML = '';
+  rightCol.innerHTML = '';
+
+  const leftItems = matchPairs.map((p, i) => ({ id: i, text: p.left }));
+  const rightItems = shuffle(matchPairs.map((p, i) => ({ id: i, text: p.right })));
+
+  leftItems.forEach((item) => {
+    const card = document.createElement('button');
+    card.className = 'match-card';
+    card.dataset.id = item.id;
+    card.dataset.side = 'left';
+    card.textContent = item.text;
+    card.addEventListener('click', () => onMatchClick(card));
+    leftCol.appendChild(card);
+  });
+
+  rightItems.forEach((item) => {
+    const card = document.createElement('button');
+    card.className = 'match-card';
+    card.dataset.id = item.id;
+    card.dataset.side = 'right';
+    card.textContent = item.text;
+    card.addEventListener('click', () => onMatchClick(card));
+    rightCol.appendChild(card);
+  });
+
+  matchState = { selectedLeft: null, selectedRight: null, matchedIds: new Set(), attempts: 0, locked: false };
+  document.getElementById('match-attempts').textContent = '0';
+  document.getElementById('match-correct').textContent = '0';
+}
+
+function onMatchClick(card) {
+  if (matchState.locked) return;
+  if (card.classList.contains('matched')) return;
+
+  const side = card.dataset.side;
+  const prev = side === 'left' ? matchState.selectedLeft : matchState.selectedRight;
+  if (prev) prev.classList.remove('selected');
+
+  card.classList.add('selected');
+  if (side === 'left') matchState.selectedLeft = card;
+  else matchState.selectedRight = card;
+
+  if (matchState.selectedLeft && matchState.selectedRight) {
+    matchState.attempts++;
+    document.getElementById('match-attempts').textContent = matchState.attempts;
+
+    const correct = matchState.selectedLeft.dataset.id === matchState.selectedRight.dataset.id;
+    if (correct) {
+      const l = matchState.selectedLeft, r = matchState.selectedRight;
+      l.classList.remove('selected');
+      r.classList.remove('selected');
+      l.classList.add('matched');
+      r.classList.add('matched');
+      matchState.matchedIds.add(l.dataset.id);
+      matchState.selectedLeft = matchState.selectedRight = null;
+      document.getElementById('match-correct').textContent = matchState.matchedIds.size;
+
+      if (matchState.matchedIds.size === matchPairs.length) {
+        showToast('Perfect match! +1 sapling');
+      }
+    } else {
+      matchState.locked = true;
+      const l = matchState.selectedLeft, r = matchState.selectedRight;
+      l.classList.add('wrong');
+      r.classList.add('wrong');
+      setTimeout(() => {
+        l.classList.remove('wrong', 'selected');
+        r.classList.remove('wrong', 'selected');
+        matchState.selectedLeft = matchState.selectedRight = null;
+        matchState.locked = false;
+      }, 600);
+    }
+  }
+}
+
+document.getElementById('match-reset').addEventListener('click', renderMatch);
+renderMatch();
+
+/* ============================================================
+   LABEL THE PICTURE (drag & drop, mouse + touch)
+   ============================================================ */
+const labels = [
+  { id: 'aorta',           text: 'Aorta' },
+  { id: 'pulmonary',       text: 'Pulmonary artery' },
+  { id: 'left-ventricle',  text: 'Left ventricle' },
+  { id: 'right-ventricle', text: 'Right ventricle' }
+];
+
+function renderLabels() {
+  const tray = document.getElementById('label-tray');
+  tray.querySelectorAll('.label-chip').forEach((c) => c.remove());
+
+  // reset hotspots
+  document.querySelectorAll('.label-hotspot').forEach((h) => {
+    h.className = 'label-hotspot';
+    h.textContent = '?';
+    h.dataset.filled = '';
+  });
+
+  shuffle(labels).forEach((l) => {
+    const chip = document.createElement('div');
+    chip.className = 'label-chip';
+    chip.textContent = l.text;
+    chip.dataset.id = l.id;
+    attachDrag(chip);
+    tray.appendChild(chip);
+  });
+
+  document.getElementById('label-placed').textContent = '0';
+  document.getElementById('label-status').textContent = 'Drag to begin';
+}
+
+function attachDrag(chip) {
+  let dragging = false;
+  let offsetX = 0, offsetY = 0;
+  let placeholder = null;
+  let hoverHotspot = null;
+
+  function start(clientX, clientY) {
+    dragging = true;
+    chip.classList.add('dragging');
+    const rect = chip.getBoundingClientRect();
+    offsetX = clientX - rect.left;
+    offsetY = clientY - rect.top;
+
+    // placeholder to keep tray height stable
+    placeholder = document.createElement('div');
+    placeholder.style.height = rect.height + 'px';
+    placeholder.style.visibility = 'hidden';
+    chip.parentNode.insertBefore(placeholder, chip);
+
+    chip.style.position = 'fixed';
+    chip.style.left = rect.left + 'px';
+    chip.style.top = rect.top + 'px';
+    chip.style.width = rect.width + 'px';
+    chip.style.zIndex = '999';
+    chip.style.pointerEvents = 'none';
+  }
+
+  function move(clientX, clientY) {
+    if (!dragging) return;
+    chip.style.left = (clientX - offsetX) + 'px';
+    chip.style.top = (clientY - offsetY) + 'px';
+
+    // detect hotspot
+    document.querySelectorAll('.label-hotspot').forEach((h) => h.classList.remove('over'));
+    const elem = document.elementFromPoint(clientX, clientY);
+    hoverHotspot = elem && elem.classList && elem.classList.contains('label-hotspot') && !elem.dataset.filled
+      ? elem : null;
+    if (hoverHotspot) hoverHotspot.classList.add('over');
+  }
+
+  function end() {
+    if (!dragging) return;
+    dragging = false;
+    chip.classList.remove('dragging');
+    chip.style.pointerEvents = '';
+
+    if (hoverHotspot && hoverHotspot.dataset.id === chip.dataset.id) {
+      // correct placement
+      hoverHotspot.classList.add('filled');
+      hoverHotspot.classList.remove('over');
+      hoverHotspot.textContent = chip.textContent;
+      hoverHotspot.dataset.filled = '1';
+      chip.remove();
+      placeholder.remove();
+
+      const placed = document.querySelectorAll('.label-hotspot.filled').length;
+      document.getElementById('label-placed').textContent = placed;
+      document.getElementById('label-status').textContent =
+        placed === labels.length ? 'Complete!' : `${placed} of ${labels.length}`;
+
+      if (placed === labels.length) {
+        showToast('Tree advanced to next stage!');
+      }
+    } else {
+      // snap back
+      if (hoverHotspot) hoverHotspot.classList.remove('over');
+      // brief shake if dropped on wrong hotspot
+      if (hoverHotspot && hoverHotspot.dataset.id !== chip.dataset.id) {
+        chip.style.transition = 'all 0.3s';
+        chip.animate([
+          { transform: 'translateX(-8px)' },
+          { transform: 'translateX(8px)' },
+          { transform: 'translateX(0)' }
+        ], { duration: 300 });
+      }
+      // restore to tray
+      chip.style.position = '';
+      chip.style.left = '';
+      chip.style.top = '';
+      chip.style.width = '';
+      chip.style.zIndex = '';
+      chip.style.transition = '';
+      placeholder.parentNode.insertBefore(chip, placeholder);
+      placeholder.remove();
+    }
+
+    hoverHotspot = null;
+  }
+
+  chip.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    start(e.clientX, e.clientY);
+    const onMove = (ev) => move(ev.clientX, ev.clientY);
+    const onUp = () => {
+      end();
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+
+  chip.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    start(t.clientX, t.clientY);
+    const onMove = (ev) => {
+      ev.preventDefault();
+      const tt = ev.touches[0];
+      move(tt.clientX, tt.clientY);
+    };
+    const onEnd = () => {
+      end();
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onEnd);
+      document.removeEventListener('touchcancel', onEnd);
+    };
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onEnd);
+    document.addEventListener('touchcancel', onEnd);
+  }, { passive: true });
+}
+
+document.getElementById('label-reset').addEventListener('click', renderLabels);
+renderLabels();
+
+</script>
+</body>
+</html>
