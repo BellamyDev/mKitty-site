@@ -1,8 +1,8 @@
 # mkitty-site
 
-The marketing and interactive demo site for [mKitty](https://github.com/YOUR_USERNAME/mKitty), a cozy MCAT study RPG.
+The marketing and interactive demo site for [mKitty](https://github.com/BellamyDev/mKitty), a cozy MCAT study RPG.
 
-**Live site:** https://YOUR_USERNAME.github.io/mkitty-site
+**Live site:** https://BellamyDev.github.io/mkitty-site
 
 ## What's here
 
@@ -18,7 +18,7 @@ No build step, no dependencies beyond Google Fonts. The whole site is one HTML f
 ## Develop locally
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mkitty-site.git
+git clone https://github.com/BellamyDev/mkitty-site.git
 cd mkitty-site
 
 # Open index.html directly in a browser, OR run a local server:
@@ -34,7 +34,7 @@ This site auto-deploys to GitHub Pages on every push to `main` via the workflow 
 
 1. Go to **Settings → Pages** in this repo
 2. Under **Source**, select **GitHub Actions**
-3. Push to `main` — the site goes live at `https://YOUR_USERNAME.github.io/mkitty-site/` in ~30 seconds
+3. Push to `main` — the site goes live at `https://BellamyDev.github.io/mkitty-site/` in ~30 seconds
 
 If you want a custom domain (e.g., `mkitty.io`), add a `CNAME` file at the root with the domain on a single line, then configure DNS at your registrar to point to GitHub Pages' IPs.
 
@@ -67,4 +67,4 @@ MIT — see [LICENSE](LICENSE).
 
 ## Related
 
-- **[mKitty (main repo)](https://github.com/YOUR_USERNAME/mKitty)** — the actual game project (Unity)
+- **[mKitty (main repo)](https://github.com/BellamyDev/mKitty)** — the actual game project (Unity)
