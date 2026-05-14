@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>mKitty — A Cozy Way to Study for the MCAT</title>
+<title>mKitty — The MCAT Prep That Grows With You</title>
 <meta name="description" content="A free, open-source study RPG for MCAT students. Grow trees, decorate your farm, and actually look forward to studying." />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -112,19 +112,33 @@ a { color: inherit; text-decoration: none; }
   color: var(--wood-dark);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.nav-logo:hover { transform: translateY(-1px); }
+.nav-logo:hover .nav-logo-mark { animation: nav-cat-wiggle 0.5s ease; }
+
+@keyframes nav-cat-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
 }
 
 .nav-logo-mark {
   flex-shrink: 0;
+  transform-origin: center 70%;
 }
+
+.nav-logo-text { line-height: 1; }
 
 .nav-links {
   display: flex;
   gap: 20px;
   font-family: var(--body);
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .nav-links a {
@@ -140,7 +154,7 @@ a { color: inherit; text-decoration: none; }
   color: var(--paper-light);
   padding: 8px 18px;
   border-radius: 100px;
-  font-weight: 800;
+  font-weight: 400;
   font-size: 14px;
   border: 2px solid var(--leaf-dark);
   box-shadow: 0 2px 0 var(--leaf-dark);
@@ -158,9 +172,12 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 700px) {
-  .nav { padding: 8px 16px; gap: 14px; top: 12px; }
+  .nav { padding: 8px 16px; gap: 12px; top: 12px; max-width: calc(100vw - 24px); }
   .nav-logo { font-size: 18px; }
   .nav-links { display: none; }
+  .nav-cta { padding: 7px 14px; font-size: 13px; white-space: nowrap; }
+  .section { padding: 60px 16px; }
+  .section-subtitle { margin-bottom: 32px; }
 }
 
 /* ============================================================
@@ -189,6 +206,10 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   z-index: 2;
   max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .hero-tagline {
@@ -202,59 +223,44 @@ a { color: inherit; text-decoration: none; }
 }
 
 .hero-title {
-  font-family: var(--display);
-  font-weight: 900;
-  font-size: clamp(56px, 11vw, 128px);
-  line-height: 0.95;
-  color: var(--wood-dark);
   margin-bottom: 24px;
-  letter-spacing: -0.03em;
   animation: title-in 1s 0.2s both;
   position: relative;
-  display: inline-block;
-}
-
-/* "i" wrap — position the cat-head over the dot */
-.title-i-wrap {
-  position: relative;
-  display: inline-block;
-}
-
-.title-i-cat {
-  position: absolute;
-  /* sit just above the natural i-dot — ears straddle it */
-  top: -0.22em;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0.5em;
-  height: 0.25em;
-  pointer-events: none;
-  transform-origin: center bottom;
-  animation: ear-twitch 5s ease-in-out infinite;
-}
-
-.title-i-cat svg {
-  width: 100%;
-  height: 100%;
   display: block;
+  text-align: center;
+  line-height: 1;
+}
+
+.wordmark {
+  width: clamp(280px, 55vw, 560px);
+  height: auto;
+  display: inline-block;
   overflow: visible;
 }
 
+/* ear-twitch on the wordmark ears group */
+.wm-ears {
+  transform-origin: 296px 60px;
+  transform-box: fill-box;
+  animation: ear-twitch 5s ease-in-out infinite;
+}
+
 @keyframes ear-twitch {
-  0%, 92%, 100% { transform: translateX(-50%) scaleY(1); }
-  94%           { transform: translateX(-50%) scaleY(0.85); }
-  96%           { transform: translateX(-50%) scaleY(1.05); }
+  0%, 92%, 100% { transform: scaleY(1) rotate(0deg); }
+  93%  { transform: scaleY(0.85) rotate(-3deg); }
+  95%  { transform: scaleY(1.05) rotate(2deg); }
+  97%  { transform: scaleY(0.95) rotate(-1deg); }
 }
 
 .hero-title .bell {
   display: inline-block;
-  width: 0.7em;
-  height: 0.7em;
-  vertical-align: super;
-  margin-left: 0.05em;
+  width: clamp(56px, 9vw, 96px);
+  height: clamp(56px, 9vw, 96px);
+  margin-left: 0.1em;
   filter: drop-shadow(0 4px 6px rgba(93, 72, 40, 0.35));
   animation: bell-fall 1.4s 1s cubic-bezier(.17,.67,.3,1.5) both, bell-swing 3s 2.4s ease-in-out infinite;
   transform-origin: top center;
+  flex-shrink: 0;
 }
 
 .hero-title .bell svg {
@@ -295,13 +301,14 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   gap: 16px;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
   animation: fade-up 1s 0.8s both;
 }
 
 .btn {
   font-family: var(--body);
-  font-weight: 800;
+  font-weight: 400;
   font-size: 16px;
   padding: 14px 28px;
   border-radius: var(--radius);
@@ -319,10 +326,74 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 4px 0 var(--wood-dark);
 }
 
+/* Cat-shaped primary button — SVG-bodied, button has no rect chrome */
+.btn-cat {
+  position: relative;
+  display: inline-block;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  width: 220px;
+  height: 130px;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 0 var(--wood-dark));
+  transition: transform 0.15s ease, filter 0.15s ease;
+  text-decoration: none;
+  z-index: 3;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-cat:hover {
+  transform: translateY(-3px);
+  filter: drop-shadow(0 7px 0 var(--wood-dark));
+}
+.btn-cat:active {
+  transform: translateY(2px);
+  filter: drop-shadow(0 2px 0 var(--wood-dark));
+}
+.btn-cat svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+/* re-enable pointer events on the actual cat shapes only */
+.btn-cat svg path,
+.btn-cat svg ellipse,
+.btn-cat svg rect {
+  pointer-events: auto;
+}
+.btn-cat .btn-cat-label {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  transform: translate(-50%, -50%);
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--wood-dark);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+/* twitch the ears on hover */
+.btn-cat .btn-cat-ears {
+  transform-origin: center 60px;
+  transform-box: fill-box;
+  transition: transform 0.25s ease;
+}
+.btn-cat:hover .btn-cat-ears {
+  animation: ear-twitch 0.6s ease-in-out;
+}
+
 .btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 7px 0 var(--wood-dark);
-}
+  box-shadow: 0 7px 0 var(--wood-dark);}
 
 .btn-primary:active {
   transform: translateY(2px);
@@ -717,6 +788,7 @@ a { color: inherit; text-decoration: none; }
   background-image:
     radial-gradient(circle at 10% 20%, rgba(168, 201, 122, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(212, 165, 72, 0.1) 0%, transparent 40%);
+  pointer-events: none;
 }
 
 .demo-section .section-eyebrow { color: var(--leaf-light); }
@@ -737,7 +809,7 @@ a { color: inherit; text-decoration: none; }
   padding: 12px 24px;
   border-radius: var(--radius);
   font-family: var(--body);
-  font-weight: 800;
+  font-weight: 400;
   font-size: 15px;
   border: 3px solid var(--wood-dark);
   box-shadow: 0 4px 0 var(--wood-dark);
@@ -796,7 +868,7 @@ a { color: inherit; text-decoration: none; }
   padding: 10px 16px;
   margin-bottom: 20px;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 400;
   color: var(--wood-dark);
 }
 
@@ -838,7 +910,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--radius);
   padding: 14px 18px;
   font-family: var(--body);
-  font-weight: 800;
+  font-weight: 400;
   font-size: 15px;
   color: var(--wood-dark);
   cursor: pointer;
@@ -917,6 +989,24 @@ a { color: inherit; text-decoration: none; }
   z-index: 0;
 }
 
+/* hide match hint on desktop */
+.match-hint { display: none; }
+
+/* mobile column active highlight */
+@media (max-width: 700px) {
+  .match-col.has-selection {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .match-col.pick-from-me {
+    opacity: 1;
+  }
+  .match-col.pick-from-me .match-card:not(.matched):not(.selected) {
+    border-color: var(--bell);
+    border-style: dashed;
+  }
+}
+
 /* ============================================================
    LABEL THE PICTURE DEMO
    ============================================================ */
@@ -928,7 +1018,111 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 700px) {
-  .label-stage { grid-template-columns: 1fr; }
+  .label-stage {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .label-tray {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 12px;
+    min-height: auto;
+  }
+  .label-tray-title {
+    width: 100%;
+  }
+  .label-chip {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  .label-hotspot {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+  .label-hotspot.filled {
+    min-width: 80px;
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  .demo-frame {
+    padding: 16px;
+    border-radius: var(--radius);
+    min-height: auto;
+  }
+  .demo-frame-header {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+  }
+  .demo-frame-title {
+    font-size: 18px;
+  }
+  .demo-stats {
+    padding: 8px 10px;
+    font-size: 12px;
+    gap: 6px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+  .demo-stat-pill {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+  .match-hint {
+    display: block;
+    text-align: center;
+    font-family: var(--hand);
+    font-size: 16px;
+    color: var(--moss);
+    margin-bottom: 8px;
+    min-height: 22px;
+    transition: opacity 0.25s;
+  }
+  .match-board {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 12px;
+  }
+  .match-col {
+    gap: 8px;
+  }
+  .match-col::before {
+    font-family: var(--hand);
+    font-size: 15px;
+    color: var(--wood);
+    text-align: center;
+    padding-bottom: 2px;
+    display: block;
+  }
+  .match-col.left::before { content: 'Organs'; }
+  .match-col.right::before { content: 'Functions'; }
+  .match-card {
+    padding: 10px 10px;
+    font-size: 13px;
+    min-height: 48px;
+    line-height: 1.3;
+  }
+  .match-card::after { display: none; }
+  .match-card.selected {
+    transform: scale(1.03);
+    box-shadow: 0 5px 0 var(--wood-dark), 0 0 0 2px var(--bell);
+  }
+  .demo-tabs {
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .demo-tab {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  .demo-frame-sub {
+    font-size: 12px;
+  }
+  .match-card.matched {
+    padding: 8px;
+    min-height: 44px;
+    font-size: 12px;
+  }
 }
 
 .label-canvas {
@@ -936,7 +1130,7 @@ a { color: inherit; text-decoration: none; }
   background: var(--paper-light);
   border: 3px solid var(--wood);
   border-radius: var(--radius);
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1920 / 1283;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
 }
@@ -945,24 +1139,26 @@ a { color: inherit; text-decoration: none; }
   width: 100%;
   height: 100%;
   display: block;
+  object-fit: cover;
 }
 
 .label-hotspot {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: var(--paper-light);
+  background: rgba(255,255,255,0.85);
   border: 3px dashed var(--wood-dark);
   transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 400;
   color: var(--wood-dark);
   transition: all 0.3s;
   z-index: 5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
 .label-hotspot.over {
@@ -1014,7 +1210,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--radius-sm);
   padding: 8px 12px;
   font-family: var(--body);
-  font-weight: 800;
+  font-weight: 400;
   font-size: 13px;
   color: var(--wood-dark);
   cursor: grab;
@@ -1096,7 +1292,7 @@ a { color: inherit; text-decoration: none; }
   gap: 24px;
   flex-wrap: wrap;
   margin-bottom: 32px;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .footer-links a:hover { color: var(--bell-glow); }
@@ -1139,24 +1335,25 @@ a { color: inherit; text-decoration: none; }
      NAV
      ============================================================ -->
 <nav class="nav">
-  <div class="nav-logo">
-    <svg class="nav-logo-mark" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-      <!-- ears -->
-      <path d="M 5 11 L 4 3 L 10 8 Z" fill="#f4e8cf" stroke="#5d4828" stroke-width="1.4" stroke-linejoin="round"/>
-      <path d="M 19 11 L 20 3 L 14 8 Z" fill="#f4e8cf" stroke="#5d4828" stroke-width="1.4" stroke-linejoin="round"/>
-      <!-- head -->
-      <ellipse cx="12" cy="13" rx="7" ry="6.5" fill="#f4e8cf" stroke="#5d4828" stroke-width="1.4"/>
-      <!-- closed eyes -->
-      <path d="M 8.5 13 Q 9.5 14, 10.5 13" stroke="#5d4828" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-      <path d="M 13.5 13 Q 14.5 14, 15.5 13" stroke="#5d4828" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-      <!-- tiny nose -->
-      <circle cx="12" cy="15.2" r="0.7" fill="#e8a5b0"/>
+  <a href="#" class="nav-logo" aria-label="mKitty home">
+    <svg class="nav-logo-mark" viewBox="0 0 32 28" width="28" height="24" aria-hidden="true" fill="none">
+      <!-- minimalist outline cat head: one continuous head silhouette with two ear peaks, dot eyes -->
+      <path d="M 6 14
+               C 6 9, 9 5, 16 5
+               C 23 5, 26 9, 26 14
+               C 26 20, 22 24, 16 24
+               C 10 24, 6 20, 6 14 Z
+               M 6 11 L 5 3 L 11 8
+               M 26 11 L 27 3 L 21 8"
+            stroke="#5d4828" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- eyes -->
+      <circle cx="12" cy="14" r="1" fill="#5d4828"/>
+      <circle cx="20" cy="14" r="1" fill="#5d4828"/>
       <!-- whiskers -->
-      <line x1="2" y1="14" x2="6" y2="14.4" stroke="#5d4828" stroke-width="0.7" stroke-linecap="round"/>
-      <line x1="18" y1="14.4" x2="22" y2="14" stroke="#5d4828" stroke-width="0.7" stroke-linecap="round"/>
+      <path d="M 2 15 L 7 15 M 25 15 L 30 15" stroke="#5d4828" stroke-width="1" stroke-linecap="round" opacity="0.55"/>
     </svg>
-    mKitty
-  </div>
+    <span class="nav-logo-text">mKitty</span>
+  </a>
   <div class="nav-links">
     <a href="#features">How it works</a>
     <a href="#demo">Try it</a>
@@ -1173,68 +1370,71 @@ a { color: inherit; text-decoration: none; }
   </div>
 
   <div class="hero-content">
-    <span class="hero-tagline">the MCAT prep that grows on you</span>
-    <h1 class="hero-title">
-      <span class="title-text">m<span class="title-K">K</span><span class="title-i-wrap">i<span class="title-i-cat" aria-hidden="true">
-        <svg viewBox="0 0 24 12" xmlns="http://www.w3.org/2000/svg">
+    <span class="hero-tagline">the MCAT prep that grows with you</span>
+    <h1 class="hero-title" aria-label="mKitty">
+      <svg class="wordmark" viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- "mKitty" wordmark in Fraunces 900, using dotless ı so the cat head replaces it cleanly -->
+        <text x="260" y="152" text-anchor="middle"
+              font-family="Fraunces, Georgia, serif" font-weight="900"
+              font-size="148" letter-spacing="-4"
+              fill="#3a2c1a">mKıtty</text>
+        <!-- cat head + ears replacing the (dotless) i -->
+        <g class="wm-ears" aria-hidden="true">
           <!-- left ear -->
-          <path d="M 4 11 L 2 1 L 11 9 Z" fill="#5d4828" stroke="#5d4828" stroke-width="0.8" stroke-linejoin="round"/>
+          <path d="M 274 60 L 265 20 L 294 52 Z"
+                fill="#3a2c1a" stroke="#3a2c1a" stroke-width="2" stroke-linejoin="round"/>
           <!-- right ear -->
-          <path d="M 20 11 L 22 1 L 13 9 Z" fill="#5d4828" stroke="#5d4828" stroke-width="0.8" stroke-linejoin="round"/>
-        </svg>
-      </span></span>tty</span><!--
-      --><span class="bell" id="hero-logo" aria-label="mKitty mascot">
-        <!-- Hero mascot — minimalist sitting cat, neutral cream + warm dark outline -->
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <!-- ears (rendered first, behind head) -->
-          <path d="M 28 38 L 24 18 L 42 30 Z"
-                fill="#f4e8cf" stroke="#5d4828" stroke-width="3" stroke-linejoin="round"/>
-          <path d="M 72 38 L 76 18 L 58 30 Z"
-                fill="#f4e8cf" stroke="#5d4828" stroke-width="3" stroke-linejoin="round"/>
-          <!-- inner ears (subtle warm pink) -->
-          <path d="M 30 34 L 28 23 L 38 30 Z" fill="#e8a5b0" opacity="0.7"/>
-          <path d="M 70 34 L 72 23 L 62 30 Z" fill="#e8a5b0" opacity="0.7"/>
-          <!-- head -->
-          <ellipse cx="50" cy="46" rx="24" ry="22"
-                   fill="#f4e8cf" stroke="#5d4828" stroke-width="3"/>
-          <!-- closed/content eyes -->
-          <path d="M 38 46 Q 42 49, 46 46" stroke="#5d4828" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <path d="M 54 46 Q 58 49, 62 46" stroke="#5d4828" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <!-- nose -->
-          <path d="M 47 53 L 53 53 L 50 56 Z" fill="#e8a5b0" stroke="#5d4828" stroke-width="1.2" stroke-linejoin="round"/>
-          <!-- mouth -->
-          <path d="M 50 56 Q 47 59, 44 57" stroke="#5d4828" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-          <path d="M 50 56 Q 53 59, 56 57" stroke="#5d4828" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M 318 60 L 327 20 L 298 52 Z"
+                fill="#3a2c1a" stroke="#3a2c1a" stroke-width="2" stroke-linejoin="round"/>
+          <!-- inner ear blush -->
+          <path d="M 278 56 L 272 30 L 291 51 Z" fill="#e8a5b0" opacity="0.95"/>
+          <path d="M 314 56 L 320 30 L 301 51 Z" fill="#e8a5b0" opacity="0.95"/>
+          <!-- filled cat head -->
+          <ellipse cx="296" cy="60" rx="26" ry="16" fill="#3a2c1a" stroke="#3a2c1a" stroke-width="2"/>
+          <!-- closed content eyes -->
+          <path d="M 286 60 Q 288.5 63 291 60" stroke="#f4e8cf" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <path d="M 301 60 Q 303.5 63 306 60" stroke="#f4e8cf" stroke-width="1.8" fill="none" stroke-linecap="round"/>
           <!-- whiskers -->
-          <line x1="22" y1="52" x2="36" y2="54" stroke="#5d4828" stroke-width="1.2" stroke-linecap="round"/>
-          <line x1="22" y1="56" x2="36" y2="56" stroke="#5d4828" stroke-width="1.2" stroke-linecap="round"/>
-          <line x1="64" y1="54" x2="78" y2="52" stroke="#5d4828" stroke-width="1.2" stroke-linecap="round"/>
-          <line x1="64" y1="56" x2="78" y2="56" stroke="#5d4828" stroke-width="1.2" stroke-linecap="round"/>
-          <!-- body -->
-          <path d="M 30 64
-                   Q 28 80, 32 92
-                   Q 50 96, 68 92
-                   Q 72 80, 70 64 Z"
-                fill="#f4e8cf" stroke="#5d4828" stroke-width="3" stroke-linejoin="round"/>
-          <!-- front paws -->
-          <ellipse cx="38" cy="92" rx="6" ry="4" fill="#f4e8cf" stroke="#5d4828" stroke-width="2.5"/>
-          <ellipse cx="62" cy="92" rx="6" ry="4" fill="#f4e8cf" stroke="#5d4828" stroke-width="2.5"/>
-          <!-- tail -->
-          <path d="M 70 80
-                   Q 88 78, 90 64
-                   Q 90 56, 82 56"
-                fill="none" stroke="#5d4828" stroke-width="3" stroke-linecap="round"/>
-        </svg>
-      </span>
+          <path d="M 268 62 L 282 63 M 310 63 L 324 62" stroke="#3a2c1a" stroke-width="1" stroke-linecap="round"/>
+        </g>
+      </svg>
     </h1>
-    <p class="hero-slogan">grows on you.</p>
     <p class="hero-subtitle">
       A free, open-source study RPG for med-school hopefuls.
       Plant a tree for every subject. Water it daily. Make studying
       feel like Sunday morning.
     </p>
     <div class="hero-buttons">
-      <a href="#demo" class="btn btn-primary">Try the demo</a>
+      <a href="#demo" class="btn-cat" aria-label="Try the demo">
+        <svg viewBox="0 0 220 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- cat body silhouette: two ears on top of a rounded body -->
+          <g class="btn-cat-ears">
+            <!-- left ear -->
+            <path d="M 40 30 L 32 0 L 78 28 Z"
+                  fill="#f4c95d" stroke="#3a2c1a" stroke-width="3" stroke-linejoin="round"/>
+            <!-- right ear -->
+            <path d="M 180 30 L 188 0 L 142 28 Z"
+                  fill="#f4c95d" stroke="#3a2c1a" stroke-width="3" stroke-linejoin="round"/>
+            <!-- inner ear blush -->
+            <path d="M 46 26 L 38 8 L 70 26 Z" fill="#e8a5b0" opacity="0.95"/>
+            <path d="M 174 26 L 182 8 L 150 26 Z" fill="#e8a5b0" opacity="0.95"/>
+          </g>
+          <!-- body (rounded squircle) -->
+          <path d="M 18 30
+                   Q 18 18 32 18
+                   L 188 18
+                   Q 202 18 202 30
+                   L 202 108
+                   Q 202 122 188 122
+                   L 32 122
+                   Q 18 122 18 108 Z"
+                fill="#f4c95d" stroke="#3a2c1a" stroke-width="3" stroke-linejoin="round"/>
+          <!-- closed cat eyes -->
+          <path d="M 78 50 Q 84 56 90 50" stroke="#3a2c1a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+          <path d="M 130 50 Q 136 56 142 50" stroke="#3a2c1a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span class="btn-cat-label">Try the demo</span>
+      </a>
       <a href="#features" class="btn btn-secondary">Learn more</a>
     </div>
   </div>
@@ -1544,13 +1744,14 @@ a { color: inherit; text-decoration: none; }
       <div class="demo-pane active" data-pane="match">
         <div class="demo-frame-header">
           <div class="demo-frame-title">Anatomy: Match Organs to Function</div>
-          <div class="demo-frame-sub">Click an item on the left, then its match on the right.</div>
+          <div class="demo-frame-sub">Tap an organ, then tap its matching function.</div>
         </div>
         <div class="demo-stats">
           <span>Attempts: <span id="match-attempts">0</span></span>
           <span class="demo-stat-pill">Correct: <span id="match-correct">0</span> / 6</span>
           <button id="match-reset" class="demo-tab" style="padding: 6px 14px; font-size: 13px; box-shadow: 0 3px 0 var(--wood-dark);">New Game</button>
         </div>
+        <div class="match-hint" id="match-hint"></div>
         <div class="match-board" id="match-board">
           <div class="match-col left" id="match-left"></div>
           <div class="match-col right" id="match-right"></div>
@@ -1560,7 +1761,7 @@ a { color: inherit; text-decoration: none; }
       <!-- LABEL THE PICTURE -->
       <div class="demo-pane" data-pane="label">
         <div class="demo-frame-header">
-          <div class="demo-frame-title">Anatomy: Label the Heart</div>
+          <div class="demo-frame-title">Anatomy: Label the Heart Chambers</div>
           <div class="demo-frame-sub">Drag each label onto the matching dashed circle.</div>
         </div>
         <div class="demo-stats">
@@ -1570,59 +1771,19 @@ a { color: inherit; text-decoration: none; }
         </div>
         <div class="label-stage">
           <div class="label-canvas" id="label-canvas">
-            <svg class="label-svg" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
-              <!-- stylized heart anatomy diagram -->
-              <defs>
-                <radialGradient id="heart-grad" cx="50%" cy="40%">
-                  <stop offset="0%" stop-color="#e8a5b0"/>
-                  <stop offset="100%" stop-color="#c44a3a"/>
-                </radialGradient>
-              </defs>
-              <!-- background paper -->
-              <rect width="400" height="300" fill="#faf2dc"/>
-              <!-- subtle grid -->
-              <g stroke="#e2cfa3" stroke-width="0.5" opacity="0.4">
-                <line x1="0" y1="75" x2="400" y2="75"/>
-                <line x1="0" y1="150" x2="400" y2="150"/>
-                <line x1="0" y1="225" x2="400" y2="225"/>
-                <line x1="100" y1="0" x2="100" y2="300"/>
-                <line x1="200" y1="0" x2="200" y2="300"/>
-                <line x1="300" y1="0" x2="300" y2="300"/>
-              </g>
-              <!-- vena cava -->
-              <path d="M 130 30 Q 140 60 150 90" stroke="#5a7fb0" stroke-width="14" fill="none" stroke-linecap="round" opacity="0.7"/>
-              <!-- aorta arch -->
-              <path d="M 220 30 Q 240 60 230 100 Q 225 110 215 110" stroke="#c44a3a" stroke-width="14" fill="none" stroke-linecap="round" opacity="0.85"/>
-              <!-- pulmonary artery -->
-              <path d="M 180 30 Q 175 50 185 80" stroke="#5a7fb0" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.75"/>
-              <!-- main heart shape (stylized) -->
-              <path d="M 200 110
-                       C 160 80, 110 100, 110 150
-                       C 110 200, 170 240, 200 260
-                       C 230 240, 290 200, 290 150
-                       C 290 100, 240 80, 200 110 Z"
-                    fill="url(#heart-grad)" stroke="#5d4828" stroke-width="3"/>
-              <!-- chamber divider -->
-              <path d="M 200 110 Q 200 180 200 245" stroke="#5d4828" stroke-width="2" fill="none" opacity="0.4" stroke-dasharray="4 4"/>
-              <!-- atrium divider -->
-              <path d="M 130 145 Q 200 135 270 145" stroke="#5d4828" stroke-width="2" fill="none" opacity="0.4" stroke-dasharray="4 4"/>
-              <!-- L/R labels (subtle) -->
-              <text x="160" y="125" fill="#5d4828" font-size="9" opacity="0.5" font-family="serif" font-style="italic">L atrium</text>
-              <text x="225" y="125" fill="#5d4828" font-size="9" opacity="0.5" font-family="serif" font-style="italic">R atrium</text>
-              <text x="155" y="200" fill="#5d4828" font-size="9" opacity="0.5" font-family="serif" font-style="italic">L ventricle</text>
-              <text x="225" y="200" fill="#5d4828" font-size="9" opacity="0.5" font-family="serif" font-style="italic">R ventricle</text>
-            </svg>
-            <!-- hotspots positioned by % -->
-            <div class="label-hotspot" data-id="aorta" style="left: 57%; top: 18%;">?</div>
-            <div class="label-hotspot" data-id="pulmonary" style="left: 45%; top: 18%;">?</div>
-            <div class="label-hotspot" data-id="left-ventricle" style="left: 40%; top: 67%;">?</div>
-            <div class="label-hotspot" data-id="right-ventricle" style="left: 60%; top: 67%;">?</div>
+            <img class="label-svg" src="uploads/c7e88c8f-6bcf-46ec-93f6-15b6100e68da-f65760f0.jpg" alt="Human Heart Chambers diagram" />
+            <!-- hotspots at the ends of the four chamber lines -->
+            <div class="label-hotspot" data-id="left-atrium" style="left: 76%; top: 44.6%; gap: 0px; border-width: 3px; padding: 0px; flex-direction: row">?</div>
+            <div class="label-hotspot" data-id="right-atrium" style="left: 23%; top: 55.1%;">?</div>
+            <div class="label-hotspot" data-id="right-ventricle" style="left: 20%; top: 70%;">?</div>
+            <div class="label-hotspot" data-id="left-ventricle" style="left: 80%; top: 70%;">?</div>
           </div>
           <div class="label-tray" id="label-tray">
             <div class="label-tray-title">Labels</div>
             <!-- chips injected here -->
           </div>
         </div>
+        <p style="font-size: 11px; color: var(--wood); opacity: 0.7; margin-top: 10px; text-align: right;">Heart illustration designed by <a href="https://www.magnific.com" style="text-decoration: underline;">brgfx — Magnific.com</a></p>
       </div>
 
       <!-- shared toast -->
@@ -1636,24 +1797,23 @@ a { color: inherit; text-decoration: none; }
      ============================================================ -->
 <footer class="footer">
   <div class="footer-title">
-    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" style="vertical-align: -5px; margin-right: 6px;">
-      <!-- ears -->
-      <path d="M 5 11 L 4 3 L 10 8 Z" fill="#faf2dc" stroke="#3a2c1a" stroke-width="1.4" stroke-linejoin="round"/>
-      <path d="M 19 11 L 20 3 L 14 8 Z" fill="#faf2dc" stroke="#3a2c1a" stroke-width="1.4" stroke-linejoin="round"/>
-      <!-- head -->
-      <ellipse cx="12" cy="13" rx="7" ry="6.5" fill="#faf2dc" stroke="#3a2c1a" stroke-width="1.4"/>
-      <!-- closed eyes -->
-      <path d="M 8.5 13 Q 9.5 14, 10.5 13" stroke="#3a2c1a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-      <path d="M 13.5 13 Q 14.5 14, 15.5 13" stroke="#3a2c1a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-      <!-- tiny nose -->
-      <circle cx="12" cy="15.2" r="0.7" fill="#e8a5b0"/>
-      <!-- whiskers -->
-      <line x1="2" y1="14" x2="6" y2="14.4" stroke="#3a2c1a" stroke-width="0.7" stroke-linecap="round"/>
-      <line x1="18" y1="14.4" x2="22" y2="14" stroke="#3a2c1a" stroke-width="0.7" stroke-linecap="round"/>
+    <svg viewBox="0 0 32 28" width="32" height="28" aria-hidden="true" style="vertical-align: -6px; margin-right: 8px;" fill="none">
+      <!-- minimalist outline cat head, paper-tone stroke for dark footer -->
+      <path d="M 6 14
+               C 6 9, 9 5, 16 5
+               C 23 5, 26 9, 26 14
+               C 26 20, 22 24, 16 24
+               C 10 24, 6 20, 6 14 Z
+               M 6 11 L 5 3 L 11 8
+               M 26 11 L 27 3 L 21 8"
+            stroke="#faf2dc" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="12" cy="14" r="1" fill="#faf2dc"/>
+      <circle cx="20" cy="14" r="1" fill="#faf2dc"/>
+      <path d="M 2 15 L 7 15 M 25 15 L 30 15" stroke="#faf2dc" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
     </svg>
     mKitty
   </div>
-  <div class="footer-tagline">the MCAT prep that grows on you</div>
+  <div class="footer-tagline">the MCAT prep that grows with you</div>
   <div class="footer-links">
     <a href="#features">How it works</a>
     <a href="#demo">Try it</a>
@@ -1676,12 +1836,12 @@ a { color: inherit; text-decoration: none; }
 
   const leafSVG = (color) => `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 14C4 8 9 3 16 3C18 3 20 4 21 5C20 12 14 18 8 18C6 18 4 17 4 14Z" fill="${color}" stroke="#3f5825" stroke-width="1.2"/><path d="M4 14C8 12 14 8 21 5" stroke="#3f5825" stroke-width="0.8" fill="none"/></svg>`;
 
-  // tiny tumbling cat silhouette — abstract enough to read at small size
-  const catSVG = () => `<svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="14" cy="16" rx="9" ry="7.5" fill="#5d4828"/>
-    <path d="M 6 12 L 4 4 L 11 9 Z" fill="#5d4828"/>
-    <path d="M 22 12 L 24 4 L 17 9 Z" fill="#5d4828"/>
-    <path d="M 22 18 Q 28 18, 27 12" stroke="#5d4828" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  // tiny tumbling cat silhouette — minimalist outline, matches logo style
+  const catSVG = () => `<svg viewBox="0 0 32 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M 6 14 C 6 9, 9 5, 16 5 C 23 5, 26 9, 26 14 C 26 20, 22 24, 16 24 C 10 24, 6 20, 6 14 Z M 6 11 L 5 3 L 11 8 M 26 11 L 27 3 L 21 8"
+          stroke="#5d4828" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="12" cy="14" r="1.2" fill="#5d4828"/>
+    <circle cx="20" cy="14" r="1.2" fill="#5d4828"/>
   </svg>`;
 
   const colors = ['#a8c97a', '#6b8e3d', '#d4a548', '#e8a5b0', '#a8c97a'];
@@ -1819,6 +1979,7 @@ document.querySelectorAll('.demo-tab[data-tab]').forEach((tab) => {
     const target = tab.dataset.tab;
     document.querySelectorAll('.demo-tab[data-tab]').forEach((t) => t.classList.toggle('active', t === tab));
     document.querySelectorAll('.demo-pane').forEach((p) => p.classList.toggle('active', p.dataset.pane === target));
+    if (target === 'label') renderLabels();
   });
 });
 
@@ -1857,6 +2018,31 @@ function shuffle(arr) {
   return arr.map((v) => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map((p) => p[1]);
 }
 
+function updateMatchHint() {
+  const hint = document.getElementById('match-hint');
+  const leftCol = document.getElementById('match-left');
+  const rightCol = document.getElementById('match-right');
+  if (!hint) return;
+
+  // Reset column classes
+  leftCol.classList.remove('has-selection', 'pick-from-me');
+  rightCol.classList.remove('has-selection', 'pick-from-me');
+
+  if (matchState.matchedIds.size === matchPairs.length) {
+    hint.textContent = '';
+  } else if (matchState.selectedLeft && !matchState.selectedRight) {
+    hint.textContent = 'now tap the matching function →';
+    leftCol.classList.add('has-selection');
+    rightCol.classList.add('pick-from-me');
+  } else if (!matchState.selectedLeft && matchState.selectedRight) {
+    hint.textContent = '← now tap the matching organ';
+    rightCol.classList.add('has-selection');
+    leftCol.classList.add('pick-from-me');
+  } else {
+    hint.textContent = 'tap an organ or function to start';
+  }
+}
+
 function renderMatch() {
   const leftCol = document.getElementById('match-left');
   const rightCol = document.getElementById('match-right');
@@ -1889,6 +2075,7 @@ function renderMatch() {
   matchState = { selectedLeft: null, selectedRight: null, matchedIds: new Set(), attempts: 0, locked: false };
   document.getElementById('match-attempts').textContent = '0';
   document.getElementById('match-correct').textContent = '0';
+  updateMatchHint();
 }
 
 function onMatchClick(card) {
@@ -1902,6 +2089,7 @@ function onMatchClick(card) {
   card.classList.add('selected');
   if (side === 'left') matchState.selectedLeft = card;
   else matchState.selectedRight = card;
+  updateMatchHint();
 
   if (matchState.selectedLeft && matchState.selectedRight) {
     matchState.attempts++;
@@ -1917,6 +2105,7 @@ function onMatchClick(card) {
       matchState.matchedIds.add(l.dataset.id);
       matchState.selectedLeft = matchState.selectedRight = null;
       document.getElementById('match-correct').textContent = matchState.matchedIds.size;
+      updateMatchHint();
 
       if (matchState.matchedIds.size === matchPairs.length) {
         showToast('Perfect match! +1 sapling');
@@ -1931,6 +2120,7 @@ function onMatchClick(card) {
         r.classList.remove('wrong', 'selected');
         matchState.selectedLeft = matchState.selectedRight = null;
         matchState.locked = false;
+        updateMatchHint();
       }, 600);
     }
   }
@@ -1943,8 +2133,8 @@ renderMatch();
    LABEL THE PICTURE (drag & drop, mouse + touch)
    ============================================================ */
 const labels = [
-  { id: 'aorta',           text: 'Aorta' },
-  { id: 'pulmonary',       text: 'Pulmonary artery' },
+  { id: 'left-atrium',     text: 'Left atrium' },
+  { id: 'right-atrium',    text: 'Right atrium' },
   { id: 'left-ventricle',  text: 'Left ventricle' },
   { id: 'right-ventricle', text: 'Right ventricle' }
 ];
@@ -2000,16 +2190,34 @@ function attachDrag(chip) {
     chip.style.pointerEvents = 'none';
   }
 
+  function rectsOverlap(a, b, pad) {
+    return !(a.right < b.left - pad || a.left > b.right + pad ||
+             a.bottom < b.top - pad || a.top > b.bottom + pad);
+  }
+
   function move(clientX, clientY) {
     if (!dragging) return;
     chip.style.left = (clientX - offsetX) + 'px';
     chip.style.top = (clientY - offsetY) + 'px';
 
-    // detect hotspot
+    // detect hotspot — check if the dragged chip overlaps any hotspot (with 20px padding)
     document.querySelectorAll('.label-hotspot').forEach((h) => h.classList.remove('over'));
-    const elem = document.elementFromPoint(clientX, clientY);
-    hoverHotspot = elem && elem.classList && elem.classList.contains('label-hotspot') && !elem.dataset.filled
-      ? elem : null;
+    const chipRect = chip.getBoundingClientRect();
+    hoverHotspot = null;
+    let bestDist = Infinity;
+    document.querySelectorAll('.label-hotspot').forEach((h) => {
+      if (h.dataset.filled) return;
+      const hRect = h.getBoundingClientRect();
+      if (rectsOverlap(chipRect, hRect, 20)) {
+        const dx = (chipRect.left + chipRect.width / 2) - (hRect.left + hRect.width / 2);
+        const dy = (chipRect.top + chipRect.height / 2) - (hRect.top + hRect.height / 2);
+        const dist = dx * dx + dy * dy;
+        if (dist < bestDist) {
+          bestDist = dist;
+          hoverHotspot = h;
+        }
+      }
+    });
     if (hoverHotspot) hoverHotspot.classList.add('over');
   }
 
